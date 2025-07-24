@@ -1,0 +1,205 @@
+/* src/URA.css */
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f8f9fc;
+  margin: 0;
+  padding: 0;
+}
+
+.ura-wrapper {
+  text-align: center;
+  padding: 30px 20px;
+}
+
+.ura-logo {
+  width: 70px;
+  margin-bottom: 10px;
+}
+
+.ura-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.ura-subtitle {
+  color: #555;
+  margin-bottom: 30px;
+}
+
+.chat-box {
+  max-width: 500px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  background-color: #083c9c;
+  color: white;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chat-icon {
+  font-size: 28px;
+}
+
+.chat-status {
+  font-size: 12px;
+  color: #d1eaff;
+  margin: 0;
+}
+
+.chat-body {
+  padding: 20px;
+  background-color: #f5f7fa;
+  flex: 1;
+}
+
+.chat-bubble {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.suggestions button {
+  background: #e4edff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  color: #083c9c;
+  font-weight: 500;
+  transition: 0.3s ease;
+}
+
+.suggestions button:hover {
+  background: #cddfff;
+}
+
+.bot-response {
+  margin-top: 15px;
+  background-color: #fff;
+  padding: 12px;
+  border-left: 4px solid #083c9c;
+  border-radius: 6px;
+  text-align: left;
+}
+
+.chat-footer {
+  display: flex;
+  padding: 12px;
+  border-top: 1px solid #ddd;
+  background-color: #fff;
+}
+
+.chat-footer input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  outline: none;
+}
+
+.send-button {
+  background-color: #083c9c;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  margin-left: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  transition: 0.2s ease;
+}
+
+.send-button:hover {
+  background-color: #062a70;
+}
+
+.version-text {
+  font-size: 12px;
+  text-align: center;
+  padding: 10px;
+  color: #888;
+}
+
+.version-text span {
+  float: right;
+  font-weight: 500;
+}
+.login-button {
+  padding: 0.3rem 0.8rem;
+  
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.signup-button {
+  padding: 0.3rem 0.8rem;
+
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.six-dots-loader {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.six-dots-loader .dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #555;
+  border-radius: 50%;
+  animation: six-dots-spin 1.2s linear infinite;
+  opacity: 0.8;
+}
+
+.six-dots-loader .dot1 { top: 50%; left: 0; transform: translate(-50%, -50%); animation-delay: 0s; }
+.six-dots-loader .dot2 { top: 20%; left: 25%; transform: translate(-50%, -50%); animation-delay: 0.2s; }
+.six-dots-loader .dot3 { top: 20%; left: 75%; transform: translate(-50%, -50%); animation-delay: 0.4s; }
+.six-dots-loader .dot4 { top: 50%; left: 100%; transform: translate(-50%, -50%); animation-delay: 0.6s; }
+.six-dots-loader .dot5 { top: 80%; left: 75%; transform: translate(-50%, -50%); animation-delay: 0.8s; }
+.six-dots-loader .dot6 { top: 80%; left: 25%; transform: translate(-50%, -50%); animation-delay: 1s; }
+
+@keyframes six-dots-spin {
+  0%, 20% { opacity: 0.3; }
+  50% { opacity: 1; }
+  100% { opacity: 0.3; }
+}
+
+.bot-response {
+  display: flex;
+  align-items: center;
+  font-style: italic;
+  color: #444;
+  margin-top: 12px;
+}
+
