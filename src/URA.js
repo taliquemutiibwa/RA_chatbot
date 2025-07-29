@@ -4,20 +4,11 @@ import './URA.css';
 import uraLogo from './URA.png';
 import { FaRobot } from 'react-icons/fa';
 import axios from 'axios';
-import KeycloakService from './KeycloakService';
-import { useNavigate } from 'react-router-dom';
+
 function URA() {
   const [message, setMessage] = useState('');
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-  if (KeycloakService.isLoggedIn()) {
-    KeycloakService.getToken(); 
-  }
-}, []);
-
 
   const handleSend = async () => {
     if (message.trim() === '') return;
@@ -27,11 +18,20 @@ function URA() {
       const res = await axios.post('http://localhost:8000/', {
         information: "User asked: " + message,
         question: message,
+        username: 'guest', // always guest
       });
       setResponse(res.data.answer);
     } catch (err) {
-      console.error('Error:', err);
-      setResponse('Error: Could not reach the backend.');
+      if (err.response) {
+        console.error('Backend error:', err.response.data);
+        setResponse(`Error: ${err.response.data.message || 'Backend error occurred.'}`);
+      } else if (err.request) {
+        console.error('No response from backend:', err.request);
+        setResponse('Error: No response from backend.');
+      } else {
+        console.error('Unexpected error:', err.message);
+        setResponse(`Error: ${err.message}`);
+      }
     } finally {
       setMessage('');
       setLoading(false);
@@ -56,18 +56,9 @@ function URA() {
             <strong>URA Assistant</strong>
             <p className="chat-status">Online</p>
           </div>
-
-          <div className="auth-buttons">
-             {KeycloakService.isLoggedIn() ? (
-              <>
-           <p>Welcome, {KeycloakService.getUsername()}</p>
-          <button className="login-button" onClick={KeycloakService.logout}>Logout</button>
-           </>
-             ) : (
-          <button className="login-button" onClick={() => navigate('/login')}>Login</button>
-           )} 
-          </div>
         </div>
+
+        <p className="login-note">You are using guest mode. <strong>Login is not required to use this assistant.</strong></p>
 
         <div className="chat-body">
           <div className="chat-bubble">
@@ -125,3 +116,5 @@ function SixDotsLoader() {
     </div>
   );
 }
+
+
