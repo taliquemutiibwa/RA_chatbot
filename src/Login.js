@@ -1,18 +1,17 @@
 // src/Login.js
 import React from "react";
 import "./SocialLogin.css"; 
-import KeycloakService from './KeycloakService';
 
 const Login = () => {
-  const handleKeycloakLogin = () => {
-    KeycloakService.login();
+  const handleDummyLogin = () => {
+    alert("This login option is currently disabled.");
   };
 
   return (
     <div className="login-wrapper">
       <div className="login-card">
         <div className="login-header">
-          <h2>URA Tax Assistant</h2>
+           <h2>URA Tax Assistant</h2>
         </div>
 
         <div className="login-body">
@@ -34,9 +33,6 @@ const Login = () => {
               placeholder="Enter password"
               required
             />
-
-            <button type="button" className="register-button" onClick={handleKeycloakLogin}>Register</button>
-            <button type="button" className="sign_in-button" onClick={handleKeycloakLogin}>Sign in</button>
           </form>
 
           <div className="separator">
@@ -45,7 +41,7 @@ const Login = () => {
             <hr />
           </div>
 
-          <button className="social-button google" onClick={handleKeycloakLogin}>
+          <button className="social-button google" onClick={handleDummyLogin}>
             <img
               src="https://img.icons8.com/color/16/000000/google-logo.png"
               alt="Google"
@@ -53,7 +49,7 @@ const Login = () => {
             Continue with Google
           </button>
 
-          <button className="social-button microsoft" onClick={handleKeycloakLogin}>
+          <button className="social-button microsoft" onClick={handleDummyLogin}>
             <img
               src="https://img.icons8.com/color/16/000000/microsoft.png"
               alt="Microsoft"
@@ -61,7 +57,7 @@ const Login = () => {
             Continue with Microsoft Account
           </button>
 
-          <button className="social-button apple" onClick={handleKeycloakLogin}>
+          <button className="social-button apple" onClick={handleDummyLogin}>
             <img
               src="https://img.icons8.com/ios-filled/16/000000/mac-os.png"
               alt="Apple"
@@ -69,13 +65,14 @@ const Login = () => {
             Continue with Apple
           </button>
 
-          <button className="social-button phone" onClick={handleKeycloakLogin}>
+          <button className="social-button phone" onClick={handleDummyLogin}>
             <img
               src="https://img.icons8.com/ios-filled/16/000000/phone.png"
               alt="Phone"
             />
             Continue with phone
           </button>
+
         </div>
       </div>
     </div>

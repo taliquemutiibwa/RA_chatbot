@@ -1,14 +1,37 @@
 // src/URA.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './URA.css';
 import uraLogo from './URA.png';
 import { FaRobot } from 'react-icons/fa';
 import axios from 'axios';
+import { login, logout, getUserName } from './KeycloakService';
 
 function URA() {
   const [message, setMessage] = useState('');
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState(null);
+
+  useEffect(() => {
+    const user = getUserName();
+    if (user) {
+      setUsername(user);
+
+      // Load previous chat history for logged-in users
+      axios
+        .get(`http://localhost:8000/history?username=${user}`)
+        .then((res) => {
+          if (res.data && res.data.history) {
+            // Combine previous history into bot response section
+            const pastMessages = res.data.history.map((msg) => `• ${msg}`).join('\n');
+            setResponse(`Welcome back ${user}!\n\nYour past messages:\n${pastMessages}`);
+          }
+        })
+        .catch((err) => {
+          console.warn('Could not load chat history', err);
+        });
+    }
+  }, []);
 
   const handleSend = async () => {
     if (message.trim() === '') return;
@@ -18,7 +41,7 @@ function URA() {
       const res = await axios.post('http://localhost:8000/', {
         information: "User asked: " + message,
         question: message,
-        username: 'guest', // always guest
+        username: getUserName() || 'guest',
       });
       setResponse(res.data.answer);
     } catch (err) {
@@ -58,7 +81,18 @@ function URA() {
           </div>
         </div>
 
-        <p className="login-note">You are using guest mode. <strong>Login is not required to use this assistant.</strong></p>
+        {username ? (
+          <p className="login-note">
+            <strong>Welcome, {username}</strong>! Thank you for logging-in.{' '}
+            <button className="auth-button" onClick={logout}>Logout</button>
+          </p>
+        ) : (
+          <p className="login-note">
+            Guest mode.{' '}
+            <strong>Login is not required to use this assistant.</strong>{' '}
+            <button className="auth-button" onClick={login}>Login</button>
+          </p>
+        )}
 
         <div className="chat-body">
           <div className="chat-bubble">
@@ -91,9 +125,7 @@ function URA() {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleSend();
-              }
+              if (e.key === 'Enter') handleSend();
             }}
           />
           <button onClick={handleSend} className="send-button">➤</button>
@@ -116,5 +148,3 @@ function SixDotsLoader() {
     </div>
   );
 }
-
-

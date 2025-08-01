@@ -147,21 +147,16 @@ body {
 }
 .login-button {
   padding: 0.3rem 0.8rem;
-  
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.85rem;
+   display: flex;
+  justify-content: flex-end;
+
 }
 
-.signup-button {
-  padding: 0.3rem 0.8rem;
 
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.85rem;
-}
 
 .six-dots-loader {
   position: relative;
