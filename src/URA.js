@@ -83,7 +83,7 @@ function URA() {
 
         {username ? (
           <p className="login-note">
-            <strong>Welcome, {username}</strong>! Thank you for logging-in.{' '}
+            <strong>Welcome, {username}</strong>!{''}
             <button className="auth-button" onClick={logout}>Logout</button>
           </p>
         ) : (
