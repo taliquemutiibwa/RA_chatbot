@@ -1,67 +1,76 @@
-// src/URA.js
 import React, { useState, useEffect } from 'react';
 import './URA.css';
 import uraLogo from './URA.png';
 import { FaRobot } from 'react-icons/fa';
 import axios from 'axios';
-import { login, logout, getUserName } from './KeycloakService';
+import keycloak, { login, logout, getUserName } from './KeycloakService';
 
 function URA() {
   const [message, setMessage] = useState('');
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState(null);
+  const [chatHistory, setChatHistory] = useState([]);
 
   useEffect(() => {
     const user = getUserName();
     if (user) {
       setUsername(user);
-
-      // Load previous chat history for logged-in users
-      axios
-        .get(`http://localhost:8000/history?username=${user}`)
-        .then((res) => {
-          if (res.data && res.data.history) {
-            // Combine previous history into bot response section
-            const pastMessages = res.data.history.map((msg) => `• ${msg}`).join('\n');
-            setResponse(`Welcome back ${user}!\n\nYour past messages:\n${pastMessages}`);
-          }
-        })
-        .catch((err) => {
-          console.warn('Could not load chat history', err);
-        });
+      fetchChatHistory();
     }
   }, []);
 
-  const handleSend = async () => {
-    if (message.trim() === '') return;
-
-    setLoading(true);
+  const fetchChatHistory = async () => {
     try {
-      const res = await axios.post('http://localhost:8000/', {
-        information: "User asked: " + message,
-        question: message,
-        username: getUserName() || 'guest',
+      const res = await axios.get('http://localhost:8000/history', {
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`
+        }
       });
-      setResponse(res.data.answer);
+      setChatHistory(res.data.history); 
     } catch (err) {
-      if (err.response) {
-        console.error('Backend error:', err.response.data);
-        setResponse(`Error: ${err.response.data.message || 'Backend error occurred.'}`);
-      } else if (err.request) {
-        console.error('No response from backend:', err.request);
-        setResponse('Error: No response from backend.');
-      } else {
-        console.error('Unexpected error:', err.message);
-        setResponse(`Error: ${err.message}`);
+      console.error("Error fetching history", err);
+    }
+  };
+
+  const handleSend = async () => {
+    if (!message.trim()) return;
+    setLoading(true);
+
+    const payload = {
+      question: message,
+      information: message,
+    };
+
+    try {
+      const headers = username
+        ? { Authorization: `Bearer ${keycloak.token}` }
+        : {};
+
+      const res = await axios.post('http://localhost:8000/chat', payload, {
+        headers,
+      });
+
+      const newChat = {
+        question: message,
+        answer: res.data.answer,
+      };
+
+      if (username) {
+        setChatHistory([newChat, ...chatHistory]);
       }
-    } finally {
+
+      setResponse(res.data.answer);
       setMessage('');
+    } catch (err) {
+      console.error('Error sending message:', err);
+      setResponse('There was an error connecting to backend.');
+    } finally {
       setLoading(false);
     }
   };
 
-  const handleSuggestion = async (suggestion) => {
+  const handleSuggestion = (suggestion) => {
     setMessage(suggestion);
     setTimeout(handleSend, 100);
   };
@@ -69,43 +78,54 @@ function URA() {
   return (
     <div className="ura-wrapper">
       <img src={uraLogo} alt="URA Logo" className="ura-logo" />
-      <h1 className="ura-title">URA Tax Assistant</h1>
-      <p className="ura-subtitle">Your 24/7 virtual assistant for all tax-related queries in Uganda</p>
+           <h1 className="ura-title">URA Tax Assistant</h1>
+           <p className="ura-subtitle">
+            Your 24/7 virtual assistant for all tax-related queries in Uganda
+           </p>
 
       <div className="chat-box">
         <div className="chat-header">
-          <FaRobot className="chat-icon" />
-          <div style={{ flex: 1 }}>
-            <strong>URA Assistant</strong>
-            <p className="chat-status">Online</p>
-          </div>
-        </div>
+            <FaRobot className="chat-icon" />
+            <div style={{ flex: 1 }}>
+              <strong>URA Assistant</strong>
+              <p className="chat-status">Online</p>
+            </div>
+         </div>
 
         {username ? (
-          <p className="login-note">
-            <strong>Welcome, {username}</strong>!{''}
-            <button className="auth-button" onClick={logout}>Logout</button>
+           <p className="login-note">
+             <strong>Welcome, {username}</strong>{' '}
+             <button className="auth-button" onClick={logout}>
+                Logout
+             </button>
           </p>
         ) : (
           <p className="login-note">
-            Guest mode.{' '}
-            <strong>Login is not required to use this assistant.</strong>{' '}
-            <button className="auth-button" onClick={login}>Login</button>
-          </p>
+             Guest mode. <strong>Login is not required to use this assistant.</strong>{' '}
+             <button className="auth-button" onClick={login}>
+              Login
+             </button>
+           </p>
         )}
 
         <div className="chat-body">
-          <div className="chat-bubble">
-            <p>Hello! 👋 I'm your URA virtual assistant. How can I help you today?</p>
-            <p>
-              I can assist with <strong>TIN</strong> registration, tax payments, filing returns, and more.
-            </p>
-          </div>
+            <div className="chat-bubble">
+              <p>Hello! 👋 I'm your URA virtual assistant. How can I help you today?</p>
+              <p>
+                I can assist with <strong>TIN</strong> registration, tax payments, filing returns, and more.
+              </p>
+            </div>
 
           <div className="suggestions">
-            <button onClick={() => handleSuggestion("How do I register for a TIN?")}>How do I register for TIN?</button>
-            <button onClick={() => handleSuggestion("Where can I pay taxes?")}>Where can I pay taxes?</button>
-            <button onClick={() => handleSuggestion("What is the penalty for late filing?")}>Penalty for late filing?</button>
+              <button onClick={() => handleSuggestion("How do I register for a TIN?")}>
+                How do I register for TIN?
+              </button>
+              <button onClick={() => handleSuggestion("Where can I pay taxes?")}>
+                Where can I pay taxes?
+              </button>
+              <button onClick={() => handleSuggestion("What is the penalty for late filing?")}>
+                Penalty for late filing?
+              </button>
           </div>
 
           {loading && (
@@ -115,7 +135,21 @@ function URA() {
             </div>
           )}
 
-          {response && !loading && <div className="bot-response">{response}</div>}
+          {!loading && response && (
+            <div className="bot-response">{response}</div>
+          )}
+
+          {username && chatHistory.length > 0 && (
+            <div className="chat-history">
+              <h4>Your Chat History:</h4>
+              {chatHistory.map((entry, index) => (
+                <div key={index} className="chat-history-entry">
+                  <strong>You:</strong> {entry.question}<br />
+                  <strong>URA:</strong> {entry.answer}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="chat-footer">
@@ -128,10 +162,14 @@ function URA() {
               if (e.key === 'Enter') handleSend();
             }}
           />
-          <button onClick={handleSend} className="send-button">➤</button>
+          <button onClick={handleSend} className="send-button">
+            ➤
+          </button>
         </div>
 
-        <p className="version-text">URA Assistant <span>Powered by MK</span></p>
+        <p className="version-text">
+          URA Assistant <span>Powered by MK</span>
+        </p>
       </div>
     </div>
   );
